@@ -1,10 +1,16 @@
 import { HexclaveClientApp } from "@hexclave/next";
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+
 export const hexclaveClientApp = new HexclaveClientApp({
   tokenStore: "nextjs-cookie",
   urls: {
     default: {
-      type: "hosted",
+      type: "handler-component",
     },
+    afterSignIn: appUrl,
+    // afterSignUp: appUrl,
+    // afterSignOut: appUrl,
+    // home: appUrl
   },
 });

@@ -14,9 +14,15 @@ export const config: HexclaveConfig = {
     "passkey": {
       "allowSignIn": true
     },
-    "oauth": {
-      "providers": {}
-    }
+    oauth: {
+      providers: {
+        google: {
+          type: "google",
+          allowSignIn: true,
+          allowConnectedAccounts: false,
+        },
+      },
+    },
   },
   "apps": {
     "installed": {
