@@ -4,7 +4,7 @@ import * as schema from "@/db/schema";
 import "dotenv/config";
 import assert from "node:assert";
 
-// provr if db found
+// prove if db found
 assert(process.env.DATABASE_URL, "You need a DATABASE_URL");
 
 const sql = neon(process.env.DATABASE_URL);

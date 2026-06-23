@@ -5,6 +5,8 @@ import { hexclaveServerApp } from "@/stack/server";
 import { eq } from "drizzle-orm";
 import { articles } from "@/db/schema";
 import db from "@/db/index";
+import {ensureUserExists} from "@/db/sync-user"
+import {canUserEditArticle} from "@/db/authz"
 
 export type CreateArticleInput = {
     title: string;
@@ -49,7 +51,61 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
         throw new Error("☠ Unauthorized");
     }
 
-    // await ensureExists(user);
+    await ensureUserExists(user);
 
-    // if(!(await canUserEditArticle(user.id, +id)))
+    if(!(await canUserEditArticle(user.id, +id))){
+        throw new Error("Forbidden");
+    }
+
+        await db
+
+    .update(articles)
+    .set({
+        title: data.title,
+        content: data.content,
+        imageUrl: data.imageUrl
+    })
+    .where(eq(articles.id, +id))
+
+    return {
+        success: true,
+        message: `Article ${id} Updated!`
+    }
+}
+
+
+export async function deleteArticle(id:string) {
+    const user = await hexclaveServerApp.getUser();
+
+    if(!user){
+        throw new Error("Unauthorized");
+    }
+
+    await ensureUserExists(user);
+
+    if(!(await canUserEditArticle(user.id, +id))){
+        throw new Error("Forbidden");
+    }
+
+    await db
+    .delete(articles)
+    .where(eq(articles.id, +id))
+
+    return {
+        success: true,
+        message: `Article ${id} Deleted!`
+    }
+
+}
+
+export async function deleteArticleForm(formData:FormData):Promise<void> {
+    const id = formData.get("id")
+
+    if(!id){
+        throw new Error("Missing Article Id")
+    }
+
+    await deleteArticle(String(id));
+
+    redirect("/")
 }
